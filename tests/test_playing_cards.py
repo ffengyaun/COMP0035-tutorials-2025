@@ -22,7 +22,7 @@ def test_suit_returns_suitstring():
 
     # Act: call its repr method
     result = suit.__repr__()
-
+    
     # Assert
     assert result == expected_result
     assert type(result) == str

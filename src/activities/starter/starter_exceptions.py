@@ -99,9 +99,22 @@ def create_db(schema_path, db_path):
     Args:
         schema_path (str): Path to the SQL schema file.
         db_path (str): Path where the SQLite database will be created.
+
+    Raises: 
+        FileNotFoundError: If the file does not exist.
+        PermissionError: If the file does not grant permission to open.
+
     """
 
     # Create a connection
+    if not schema_path.is_file():
+        raise FileNotFoundError(f"Schema file not found:{schema_path}")
+    try:
+        schema_sql = schema_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        raise ValueError(f"Schema must be valid UTF-8 text:{schema_path}")
+    if not schema_sql.strip():
+        raise ValueError(f"Schema file is empty: {schema_path}") 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
@@ -133,8 +146,14 @@ def describe(file_path):
             FileNotFoundError: If the file does not exist.
 
     """
-    df = pd.read_csv(file_path)
-
+    try:
+        df = pd.read_csv(file_path)
+    except PermissionError as e:
+        raise PermissionError(f"No permission to read CSV: {file_path}") from e
+    except UnicodeDecodeError as e:
+        raise ValueError(f"CSV is not valid text/encoding: {file_path}") from e
+    except pd.errors.EmptyDataError as e:
+        raise ValueError(f"CSV is empty: {file_path}") from e
     # 2.3 Describe
     pd.set_option("display.max_columns", None)  # Change the pandas display options to print all columns
     print("\nThe number of rows and columns\n", df.shape)
@@ -146,11 +165,11 @@ if __name__ == '__main__':
     not_file = importlib.resources.files(data).joinpath("traffic.csv")  # exists
     is_file = importlib.resources.files(data).joinpath("student_data.csv")  # does not exist
 
-    print_data(not_file)
+    #print_data(not_file)
     print_data(is_file)
 
-    print_data_group_example(not_file)
+    #print_data_group_example(not_file)
     print_data_group_example(is_file)
 
-    print_data_pattern_example(not_file)
+    #print_data_pattern_example(not_file)
     print_data_pattern_example(is_file)

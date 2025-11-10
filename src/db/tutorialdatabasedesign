@@ -1,0 +1,64 @@
+from pathlib import Path
+import pandas as pd
+import matplotlib.pyplot as plt
+import sqlite3
+
+def check_xlsx_file(arg_1, arg_2, arg_3):
+    the_xlsx_file = Path(__file__).parent.parent.joinpath(arg_1, arg_2, arg_3)
+    return the_xlsx_file
+
+def read_xlsx_file_1(the_xlsx_file_path):
+    variable_name_for_df_1 = pd.read_excel(the_xlsx_file_path, sheet_name=0)
+    return variable_name_for_df_1
+
+def read_xlsx_file_2(the_xlsx_file_path):
+    variable_name_for_df_2 = pd.read_excel(the_xlsx_file_path, sheet_name=1)
+    return variable_name_for_df_2
+def describe_dataframe(df,columns_labels = None):
+     """This function describe all of the columns information of the data when 
+     not specified columns_labels. 
+        Parameters
+        df (DataFrame): DataFrame to describe
+        columns_labels (list): Name of column labels
+
+        Returns:
+        String: Dtype of the columns.
+ 
+     """
+     if columns_labels is not None:
+        Dtype_info = df[columns_labels].dtypes
+     else:
+        Dtype_info = df.dtypes
+     return Dtype_info
+    
+def unique_values(df, column_label):
+    """This function returns the unique values in a specified column of the DataFrame.
+        Parameters
+        df (DataFrame): DataFrame containing the data
+        column_label (str): Name of the column to check
+
+        Returns:
+        array: Unique values in the specified column.
+    """
+    return df[column_label].unique()
+
+if __name__ == "__main__":
+    xlsx_file_path = check_xlsx_file("activities","data","paralympics_all_raw.xlsx")
+    df_events = read_xlsx_file_1(xlsx_file_path)
+    df_country_codes = read_xlsx_file_2(xlsx_file_path)
+    #print(df_events.columns)
+    #print(df_country_codes.columns)
+    Dtype_info_events = describe_dataframe(df_events)
+    Dtype_info_country_codes = describe_dataframe(df_country_codes)
+    #print(Dtype_info_events)
+    #print(Dtype_info_country_codes)
+    unique_values_country = unique_values(df_events,"country")
+    unique_values_Code = unique_values(df_country_codes,"Code")
+    print(unique_values_country)
+    print(unique_values_Code)
+    conn = sqlite3.connect('src/db/paralympics_schema.sql')
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON;")
+    conn.commit()
+    conn.close()
+

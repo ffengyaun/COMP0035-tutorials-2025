@@ -1,6 +1,6 @@
 # Basic project information
 [project]
-name = "comp0035-tutorials"
+name = "comp0035-tutorials-fengyuan"
 version = "2025.0.1"
 # Tells setuptools that the following packages need to be installed for this project. Version numbers can be specified, the following will just install the latest version.
 dependencies = [
@@ -18,7 +18,7 @@ dependencies = [
 
 # Most students use setuptools, other options exist e.g. poetry
 [build-system]
-requires = ["setuptools >= 70.0"]
+requires = ["setuptools>=70.0"]
 build-backend = "setuptools.build_meta"
 
 # Setuptools configuration see https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#setuptools-specific-configuration
